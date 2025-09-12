@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  plan        Plan         @default(FREE)
+  noteCount   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  users       User[]
+  notes       Note[]
+  invitations Invitation[]
+  auditLogs   AuditLog[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(MEMBER)
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  notes     Note[]
+  deleted   Boolean  @default(false)//soft-delete
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  AuditLog AuditLog[]
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  deleted   Boolean  @default(false)//soft-delete
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invitation {
+  id         String   @id @default(cuid())
+  email      String
+  token      String   @unique
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  invitedBy  String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO
+}
