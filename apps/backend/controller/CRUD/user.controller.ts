@@ -1,0 +1,136 @@
+import { prismaClient } from "db/client";
+import type { Request, Response } from "express";
+
+interface CreateNodeRequestBody {
+    title:string;
+    content:string;
+}
+
+interface UpdateNoteRequestBody {
+    title:string;
+    content:string;
+}
+
+export const createNode = async(req:Request<{},CreateNodeRequestBody>,res:Response) => {
+    try {
+
+        const {title,content} = req.body;
+
+        if(!title || !content){
+            return res.status(400).json({message:"Bad Request"})
+        }
+
+        if(!req.user?.tenantId || !req.user?.id){
+            return res.status(401).json({message:"Unauthorized - Missing user information"})
+        }
+
+        const note = await prismaClient.note.create({
+            data:{
+                title:title,
+                content:content,
+                tenantId:req.user.tenantId,
+                userId:req.user.id
+            }
+        })
+
+        return res.status(201).json({message:"Note created successfully", note})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+export const getTenantNotes = async(req:Request,res:Response) => {
+    try {
+
+        const notes = await prismaClient.note.findMany({
+            where:{
+                tenantId:req.user?.tenantId
+            }
+        })
+
+        return res.status(200).json({message:"Notes fetched successfully", notes})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Error fetching notes"})
+    }
+}
+
+export const getUserNotes = async(req:Request,res:Response) => {
+    try {
+
+        const notes = await prismaClient.note.findMany({
+            where:{
+                userId:req.user?.id
+            }
+        })
+
+        return res.status(200).json({message:"Notes fetched successfully", notes})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Error fetching notes"})
+    }
+}
+
+export const getNote = async(req:Request,res:Response) => {
+    try {
+
+        const note = await prismaClient.note.findUnique({
+            where:{
+                id:req.params.id
+            }
+        })
+
+        return res.status(200).json({message:"Note fetched successfully", note})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Error fetching note"})
+    }
+}
+
+export const updateNote = async(req:Request<{id:string},UpdateNoteRequestBody>,res:Response) => {
+    try {
+
+        const {title,content} = req.body;
+
+        if(!title || !content){
+            return res.status(400).json({message:"Bad Request"})
+        }
+
+        const note = await prismaClient.note.update({
+            where:{
+                id:req.params.id
+            },
+            data:{
+                title:title,
+                content:content
+            }
+        })
+
+        return res.status(200).json({message:"Note updated successfully", note})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Error updating note"})
+    }
+}
+
+export const deleteNote = async(req:Request<{id:string},UpdateNoteRequestBody>,res:Response) => {
+    try {
+
+        const note = await prismaClient.note.update({
+            where:{
+                id:req.params.id
+            },
+            data:{
+                deleted:true
+            }
+        })
+
+        return res.status(200).json({message:"Note deleted successfully", note})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Error deleting note"})
+    }
+}
+
+    
