@@ -15,6 +15,11 @@ interface LoginRequestBody {
     password: string;
 }
 
+interface RegisterTenantRequestBody {
+    name:string;
+    slug: string;
+}
+
 export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: Response) => {
     try {
         const {email, password, role, slug} = req.body;
@@ -116,3 +121,37 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
     }
 
 }
+
+export const registerTenant = async (req: Request<{}, {}, RegisterTenantRequestBody>, res: Response) => {
+    try {
+
+        const {name,slug} = req.body;
+
+        if(!name || !slug){
+            return res.status(400).json({message:"Bad Request"})
+        }
+
+        const tenant = await prismaClient.tenant.findUnique({
+            where:{
+                slug:slug
+            }
+        })
+
+        if(tenant){
+            return res.status(409).json({message:"Tenant already exists"})
+        }
+
+        const newTenant = await prismaClient.tenant.create({
+            data:{
+                name:name,
+                slug:slug,
+            }
+        })
+
+        return res.status(201).json({message:"Tenant created successfully",tenant: newTenant})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+    

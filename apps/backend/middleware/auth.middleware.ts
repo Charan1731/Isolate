@@ -4,10 +4,16 @@ import dotenv from "dotenv"
 import { prismaClient } from "db/client"
 
 dotenv.config()
+interface User {
+    id: string;
+    tenantId: string;
+    role: string;
+}
+
 declare global{
     namespace Express{
         interface Request{
-            user?: JwtPayload;
+            user?: User;
         }
     }
 }
@@ -18,9 +24,9 @@ export const authenticate = async (req:Request,res:Response,next:NextFunction) =
         const token = req.headers.authorization?.split(" ")[1];
     
         if(!token){
-            return res.status(401).json({message:"Unauthorized"})
+            return res.status(401).json({message:"No token found"})
         }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_ADMIN as string);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
         
         if (typeof decoded === 'string' || !decoded.id) {
             return res.status(401).json({message: "Invalid token"});
@@ -41,7 +47,8 @@ export const authenticate = async (req:Request,res:Response,next:NextFunction) =
         
         next();
     } catch (error) {
-        return res.status(401).json({message:"Unauthorized"})
+        console.log(error)
+        return res.status(500).json({message:"Server error"})
     }
 }
 
@@ -49,9 +56,11 @@ export const authorize = (...allowedRoles:string[]) =>
     (req:Request,res:Response,next:NextFunction) => {
 
         if(!req.user){
-            return res.status(401).json({message:"Unauthorized"})
+            return res.status(401).json({message:"No user found"})
         }
-        
+
+        console.log(req.user.role)
+        console.log(allowedRoles)
         if(!allowedRoles.includes(req.user.role)){
             return res.status(401).json({message:"Unauthorized"})
         }
