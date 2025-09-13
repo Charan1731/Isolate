@@ -8,7 +8,7 @@ userRouter.post("/create-node", authenticate,authorize("MEMBER"), createNode);
 userRouter.get("/get-tenant-notes", authenticate,authorize("MEMBER","ADMIN"), getTenantNotes);
 userRouter.get("/get-user-notes", authenticate,authorize("MEMBER","ADMIN"), getUserNotes);
 userRouter.get("/get-note", authenticate,authorize("MEMBER","ADMIN"), getNote);
-userRouter.put("/update-note", authenticate,authorize("MEMBER"), updateNote);
-userRouter.delete("/delete-note", authenticate,authorize("MEMBER","ADMIN"), deleteNote);
+userRouter.put("/update", authenticate,authorize("MEMBER"), updateNote);
+userRouter.delete("/delete", authenticate,authorize("MEMBER","ADMIN"), deleteNote);
 
 export default userRouter;
