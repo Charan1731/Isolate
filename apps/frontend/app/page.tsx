@@ -4,10 +4,8 @@ import { ArrowRight, Shield, Users, FileText, Building, CheckCircle, Star } from
 const page = () => {
   return (
     <main className="min-h-screen bg-background">
-      {/* Hero Section */}
       <section id="home" className="pt-32 pb-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          {/* Hero Content */}
           <div className="space-y-8">
             <div className="inline-flex items-center px-4 py-2 bg-muted/50 border border-border/50 rounded-full text-sm text-muted-foreground">
               <Building className="w-4 h-4 mr-2" />
@@ -40,7 +38,6 @@ const page = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section id="features" className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -53,7 +50,6 @@ const page = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
             <div className="group p-8 bg-card border border-border/50 rounded-2xl hover:border-border transition-all duration-300">
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                 <Shield className="w-6 h-6 text-primary" />
@@ -64,7 +60,6 @@ const page = () => {
               </p>
             </div>
 
-            {/* Feature 2 */}
             <div className="group p-8 bg-card border border-border/50 rounded-2xl hover:border-border transition-all duration-300">
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                 <FileText className="w-6 h-6 text-primary" />
@@ -75,7 +70,6 @@ const page = () => {
               </p>
             </div>
 
-            {/* Feature 3 */}
             <div className="group p-8 bg-card border border-border/50 rounded-2xl hover:border-border transition-all duration-300">
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                 <Users className="w-6 h-6 text-primary" />
@@ -89,7 +83,6 @@ const page = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section className="py-20 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -135,7 +128,6 @@ const page = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
@@ -148,7 +140,6 @@ const page = () => {
           </div>
           
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Free Plan */}
             <div className="p-8 bg-card border border-border/50 rounded-2xl">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold mb-2">FREE</h3>
@@ -178,7 +169,6 @@ const page = () => {
               </button>
             </div>
 
-            {/* Pro Plan */}
             <div className="p-8 bg-card border border-primary/50 rounded-2xl relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
@@ -220,7 +210,6 @@ const page = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
       <section className="py-20 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -276,7 +265,6 @@ const page = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-card border border-border/50 rounded-3xl p-12">
