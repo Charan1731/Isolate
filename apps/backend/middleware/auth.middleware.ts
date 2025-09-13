@@ -6,6 +6,7 @@ import { prismaClient } from "db/client"
 dotenv.config()
 interface User {
     id: string;
+    email: string;
     tenantId: string;
     role: string;
 }
