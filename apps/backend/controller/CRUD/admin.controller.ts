@@ -449,3 +449,36 @@ export const updateUserRole = async(req:Request,res:Response) => {
         return res.status(500).json({message:"Internal Server Error"})
     }
 }
+
+export const getAdminTenantNotes = async(req:Request,res:Response) => {
+    try {
+        if(!req.user){
+            return res.status(401).json({message:"Unauthorized"})
+        }
+
+        const notes = await prismaClient.note.findMany({
+            where:{
+                tenantId: req.user.tenantId,
+                deleted: false
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        role: true,
+                        plan: true
+                    }
+                }
+            },
+            orderBy: {
+                updatedAt: 'desc'
+            }
+        })
+
+        return res.status(200).json({message:"Notes retrieved successfully", notes})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}

@@ -17,7 +17,8 @@ export const getTenantNotes = async(req:Request,res:Response) => {
 
         const notes = await prismaClient.note.findMany({
             where:{
-                tenantId:req.user?.tenantId
+                tenantId:req.user?.tenantId,
+                deleted:false
             }
         })
 

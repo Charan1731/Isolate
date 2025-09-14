@@ -37,7 +37,7 @@ const Navbar = () => {
                 <span>Dashboard</span>
               </Link>
             )}
-            {isAuthenticated && (
+            {isAuthenticated && user?.role === 'MEMBER' && (
               <Link href="/user" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
                 <User className="w-4 h-4" />
                 <span>Dashboard</span>

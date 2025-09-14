@@ -129,6 +129,10 @@ export class ApiClient {
     return this.get(`/admin/audit-logs?page=${page}&limit=${limit}`);
   }
 
+  static async getAdminTenantNotes() {
+    return this.get('/admin/notes');
+  }
+
   // User-specific note methods
   static async createNote(title: string, content: string) {
     return this.post('/user/create-node', { title, content });

@@ -8,7 +8,8 @@ import {
     getTenantStats, 
     getAuditLogs, 
     getPendingInvitations, 
-    updateUserRole 
+    updateUserRole,
+    getAdminTenantNotes
 } from "../controller/CRUD/admin.controller";
 import { authenticate, authorize } from "../middleware/auth.middleware";
 
@@ -23,5 +24,6 @@ adminRouter.post("/send-invitation", authenticate, authorize("ADMIN"), sendInvit
 adminRouter.get("/invitations", authenticate, authorize("ADMIN"), getPendingInvitations);
 adminRouter.get("/stats", authenticate, authorize("ADMIN"), getTenantStats);
 adminRouter.get("/audit-logs", authenticate, authorize("ADMIN"), getAuditLogs);
+adminRouter.get("/notes", authenticate, authorize("ADMIN"), getAdminTenantNotes);
 
 export default adminRouter;
