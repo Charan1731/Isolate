@@ -130,7 +130,7 @@ export const sendInvitation = async(req:Request<{},SendInvitationRequestBody>,re
             return res.status(500).json({message:"Email service is not configured properly"})
         }
 
-        const invitationLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/invite?token=${Buffer.from(`${email}:${adminUser.tenantId}`).toString('base64')}`;
+        const invitationLink = `${process.env.FRONTEND_URL || 'http://localhost:3000/auth'}`;
 
         const emailSent = await emailService.sendInvitationEmail({
             recipientEmail: email,

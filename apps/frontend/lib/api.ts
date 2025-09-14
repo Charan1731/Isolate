@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 export interface ApiResponse<T = any> {
@@ -19,9 +20,9 @@ export class ApiClient {
   ): Promise<ApiResponse<T>> {
     try {
       const token = this.getAuthToken();
-      const headers: HeadersInit = {
+      const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        ...options.headers,
+        ...(options.headers as Record<string, string>),
       };
 
       if (token) {
@@ -126,6 +127,31 @@ export class ApiClient {
 
   static async getAuditLogs(page: number = 1, limit: number = 50) {
     return this.get(`/admin/audit-logs?page=${page}&limit=${limit}`);
+  }
+
+  // User-specific note methods
+  static async createNote(title: string, content: string) {
+    return this.post('/user/create-node', { title, content });
+  }
+
+  static async getUserNotes() {
+    return this.get('/user/get-user-notes');
+  }
+
+  static async getTenantNotes() {
+    return this.get('/user/get-tenant-notes');
+  }
+
+  static async getNote(noteId: string) {
+    return this.get(`/user/get-note?id=${noteId}`);
+  }
+
+  static async updateNote(noteId: string, title: string, content: string) {
+    return this.put(`/user/update?id=${noteId}`, { title, content });
+  }
+
+  static async deleteNote(noteId: string) {
+    return this.delete(`/user/delete?id=${noteId}`);
   }
 }
 

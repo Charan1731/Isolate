@@ -9,6 +9,7 @@ interface User {
     email: string;
     tenantId: string;
     role: string;
+    plan:string;
 }
 
 declare global{

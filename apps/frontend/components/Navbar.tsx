@@ -29,20 +29,18 @@ const Navbar = () => {
             <Link href="/" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
               <span>Home</span>
             </Link>
-            <Link href="/features" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
-              <Users className="w-4 h-4" />
-              <span>Features</span>
-            </Link>
-            <Link href="/pricing" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
-              <DollarSign className="w-4 h-4" />
+            <Link href="/" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
               <span>Pricing</span>
-            </Link>
-            <Link href="/testimonials" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
-              Reviews
             </Link>
             {isAuthenticated && user?.role === 'ADMIN' && (
               <Link href="/admin" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
-                <span>Admin</span>
+                <span>Dashboard</span>
+              </Link>
+            )}
+            {isAuthenticated && (
+              <Link href="/user" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
+                <User className="w-4 h-4" />
+                <span>Dashboard</span>
               </Link>
             )}
           </div>
@@ -51,13 +49,13 @@ const Navbar = () => {
             <div className="hidden md:flex items-center space-x-3">
               {isAuthenticated ? (
                 <>
-                  <div className="flex items-center space-x-2 text-sm font-medium text-foreground/80">
+                  <Link href={user?.role === 'ADMIN' ? '/admin' : '/user'} className="flex items-center space-x-2 text-sm font-medium text-foreground/80">
                     <User className="w-4 h-4" />
                     <span>{user?.email}</span>
                     <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
                       {user?.role}
                     </span>
-                  </div>
+                  </Link>
                   <button 
                     onClick={logout}
                     className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer"
