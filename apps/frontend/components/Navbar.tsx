@@ -26,20 +26,25 @@ const Navbar = () => {
           </div>
 
           <div className="hidden lg:flex items-center space-x-8 cursor-pointer">
-            <a href="#home" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
+            <Link href="/" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
               <span>Home</span>
-            </a>
-            <a href="#features" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
+            </Link>
+            <Link href="/features" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
               <Users className="w-4 h-4" />
               <span>Features</span>
-            </a>
-            <a href="#pricing" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1">
+            </Link>
+            <Link href="/pricing" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
               <DollarSign className="w-4 h-4" />
               <span>Pricing</span>
-            </a>
-            <a href="#testimonials" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
+            </Link>
+            <Link href="/testimonials" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
               Reviews
-            </a>
+            </Link>
+            {isAuthenticated && user?.role === 'ADMIN' && (
+              <Link href="/admin" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
+                <span>Admin</span>
+              </Link>
+            )}
           </div>
 
           <div className="flex items-center space-x-4">

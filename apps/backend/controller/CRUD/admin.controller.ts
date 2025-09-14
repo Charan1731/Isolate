@@ -170,4 +170,282 @@ export const sendInvitation = async(req:Request<{},SendInvitationRequestBody>,re
         return res.status(500).json({message:"Internal Server Error"})
     }
 }
-    
+
+// Get all users in the tenant
+export const getTenantUsers = async(req:Request,res:Response) => {
+    try {
+        if(!req.user){
+            return res.status(401).json({message:"Unauthorized"})
+        }
+
+        const users = await prismaClient.user.findMany({
+            where:{
+                tenantId: req.user.tenantId,
+                deleted: false
+            },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                plan: true,
+                createdAt: true,
+                updatedAt: true,
+                _count: {
+                    select: {
+                        notes: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+
+        return res.status(200).json({message:"Users retrieved successfully", users})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+// Delete/Deactivate a user
+export const deleteUser = async(req:Request,res:Response) => {
+    try {
+        const { userId } = req.body;
+
+        if(!userId){
+            return res.status(400).json({message:"User ID is required"})
+        }
+
+        if(!req.user){
+            return res.status(401).json({message:"Unauthorized"})
+        }
+
+        const user = await prismaClient.user.findUnique({
+            where:{
+                id: userId,
+            }
+        })
+
+        if(!user){
+            return res.status(404).json({message:"User not found"})
+        }
+
+        if(user.tenantId !== req.user.tenantId){
+            return res.status(401).json({message:"User does not belong to this tenant"})
+        }
+
+        if(user.id === req.user.id){
+            return res.status(400).json({message:"You cannot delete yourself"})
+        }
+
+        // Soft delete the user
+        const deletedUser = await prismaClient.user.update({
+            where:{
+                id: userId
+            },
+            data:{
+                deleted: true
+            }
+        })
+
+        // Create audit log
+        await prismaClient.auditLog.create({
+            data: {
+                tenantId: req.user.tenantId,
+                userId: req.user.id,
+                action: `Deleted user ${user.email}`
+            }
+        });
+
+        return res.status(200).json({message:"User deleted successfully", user: deletedUser})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+// Get tenant statistics
+export const getTenantStats = async(req:Request,res:Response) => {
+    try {
+        if(!req.user){
+            return res.status(401).json({message:"Unauthorized"})
+        }
+
+        const [userCount, noteCount, invitationCount] = await Promise.all([
+            prismaClient.user.count({
+                where: {
+                    tenantId: req.user.tenantId,
+                    deleted: false
+                }
+            }),
+            prismaClient.note.count({
+                where: {
+                    tenantId: req.user.tenantId,
+                    deleted: false
+                }
+            }),
+            prismaClient.invitation.count({
+                where: {
+                    tenantId: req.user.tenantId,
+                    expiresAt: {
+                        gt: new Date()
+                    }
+                }
+            })
+        ]);
+
+        const tenant = await prismaClient.tenant.findUnique({
+            where: {
+                id: req.user.tenantId
+            }
+        });
+
+        return res.status(200).json({
+            message:"Statistics retrieved successfully", 
+            stats: {
+                userCount,
+                noteCount,
+                invitationCount,
+                tenant
+            }
+        })
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+// Get audit logs
+export const getAuditLogs = async(req:Request,res:Response) => {
+    try {
+        if(!req.user){
+            return res.status(401).json({message:"Unauthorized"})
+        }
+
+        const { page = 1, limit = 50 } = req.query;
+        const skip = (Number(page) - 1) * Number(limit);
+
+        const auditLogs = await prismaClient.auditLog.findMany({
+            where:{
+                tenantId: req.user.tenantId
+            },
+            include: {
+                user: {
+                    select: {
+                        email: true,
+                        role: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            skip,
+            take: Number(limit)
+        })
+
+        const totalCount = await prismaClient.auditLog.count({
+            where: {
+                tenantId: req.user.tenantId
+            }
+        });
+
+        return res.status(200).json({
+            message:"Audit logs retrieved successfully", 
+            auditLogs,
+            pagination: {
+                currentPage: Number(page),
+                totalPages: Math.ceil(totalCount / Number(limit)),
+                totalCount,
+                hasNext: skip + Number(limit) < totalCount,
+                hasPrev: Number(page) > 1
+            }
+        })
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+// Get pending invitations
+export const getPendingInvitations = async(req:Request,res:Response) => {
+    try {
+        if(!req.user){
+            return res.status(401).json({message:"Unauthorized"})
+        }
+
+        const invitations = await prismaClient.invitation.findMany({
+            where:{
+                tenantId: req.user.tenantId,
+                expiresAt: {
+                    gt: new Date()
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        })
+
+        return res.status(200).json({message:"Invitations retrieved successfully", invitations})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+// Update user role
+export const updateUserRole = async(req:Request,res:Response) => {
+    try {
+        const { userId, role } = req.body;
+
+        if(!userId || !role){
+            return res.status(400).json({message:"User ID and role are required"})
+        }
+
+        if(!req.user){
+            return res.status(401).json({message:"Unauthorized"})
+        }
+
+        const user = await prismaClient.user.findUnique({
+            where:{
+                id: userId,
+            }
+        })
+
+        if(!user){
+            return res.status(404).json({message:"User not found"})
+        }
+
+        if(user.tenantId !== req.user.tenantId){
+            return res.status(401).json({message:"User does not belong to this tenant"})
+        }
+
+        if(user.id === req.user.id){
+            return res.status(400).json({message:"You cannot change your own role"})
+        }
+
+        const updatedUser = await prismaClient.user.update({
+            where:{
+                id: userId
+            },
+            data:{
+                role: role
+            }
+        })
+
+        // Create audit log
+        await prismaClient.auditLog.create({
+            data: {
+                tenantId: req.user.tenantId,
+                userId: req.user.id,
+                action: `Updated role of ${user.email} to ${role}`
+            }
+        });
+
+        return res.status(200).json({message:"User role updated successfully", user: updatedUser})
+        
+    } catch (error) {
+        return res.status(500).json({message:"Internal Server Error"})
+    }
+}

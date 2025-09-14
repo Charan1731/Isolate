@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -89,6 +89,43 @@ export class ApiClient {
 
   static async registerTenant(name: string, slug: string) {
     return this.post('/auth/register-tenant', { name, slug });
+  }
+
+  // Admin-specific methods
+  static async getTenantUsers() {
+    return this.get('/admin/users');
+  }
+
+  static async deleteUser(userId: string) {
+    return this.post('/admin/delete-user', { userId });
+  }
+
+  static async updateUserRole(userId: string, role: string) {
+    return this.post('/admin/update-user-role', { userId, role });
+  }
+
+  static async updateUserPlan(userId: string, plan: string) {
+    return this.post('/admin/update-user-plan', { userId, plan });
+  }
+
+  static async updateTenantPlan(plan: string) {
+    return this.post('/admin/update-tenant-plan', { plan });
+  }
+
+  static async sendInvitation(email: string) {
+    return this.post('/admin/send-invitation', { email });
+  }
+
+  static async getPendingInvitations() {
+    return this.get('/admin/invitations');
+  }
+
+  static async getTenantStats() {
+    return this.get('/admin/stats');
+  }
+
+  static async getAuditLogs(page: number = 1, limit: number = 50) {
+    return this.get(`/admin/audit-logs?page=${page}&limit=${limit}`);
   }
 }
 

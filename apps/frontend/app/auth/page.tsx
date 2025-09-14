@@ -5,12 +5,22 @@ import { useAuth } from '@/context/AuthContext';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
 import TenantRegistrationForm from '@/components/auth/TenantRegistrationForm';
+import { useRouter } from 'next/navigation';
 
 type AuthMode = 'login' | 'register' | 'tenant' | 'dashboard';
 
 const AuthPage = () => {
-  const { isLoading } = useAuth();
+  const { isLoading, isAuthenticated,user } = useAuth();
   const [authMode, setAuthMode] = useState<AuthMode>('login');
+  const router = useRouter()
+
+  if(isAuthenticated){
+    if(user?.role === 'ADMIN'){
+      router.push('/admin')
+    } else {
+      router.push('/user')
+    }
+  }
 
   if (isLoading) {
     return (
@@ -31,7 +41,7 @@ const AuthPage = () => {
           <div className="inline-flex bg-muted/50 rounded-lg p-1">
             <button
               onClick={() => setAuthMode('login')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors pointer-cursor ${
                 authMode === 'login'
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
@@ -41,7 +51,7 @@ const AuthPage = () => {
             </button>
             <button
               onClick={() => setAuthMode('register')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-md pointer-cursor text-sm font-medium transition-colors ${
                 authMode === 'register'
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
@@ -51,7 +61,7 @@ const AuthPage = () => {
             </button>
             <button
               onClick={() => setAuthMode('tenant')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-md text-sm font-medium hover:pointer-cursor transition-colors ${
                 authMode === 'tenant'
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
