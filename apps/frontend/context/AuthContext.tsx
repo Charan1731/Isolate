@@ -45,6 +45,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     useEffect(() => {
         const loadAuthState = () => {
             try {
+                // Only run in browser environment
+                if (typeof window === 'undefined') {
+                    setIsLoading(false);
+                    return;
+                }
+
                 const storedToken = localStorage.getItem('auth_token');
                 const storedUser = localStorage.getItem('auth_user');
                 
@@ -55,9 +61,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 }
             } catch (error) {
                 console.error('Error loading auth state:', error);
-                // Clear invalid data
-                localStorage.removeItem('auth_token');
-                localStorage.removeItem('auth_user');
+                // Clear invalid data only in browser
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('auth_user');
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -67,16 +75,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, []);
 
     const saveAuthState = (user: User, token: string) => {
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('auth_user', JSON.stringify(user));
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('auth_token', token);
+            localStorage.setItem('auth_user', JSON.stringify(user));
+        }
         setUser(user);
         setToken(token);
     };
 
     // Clear auth state
     const clearAuthState = () => {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_user');
+        }
         setUser(null);
         setToken(null);
     };
@@ -207,6 +219,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // This would typically validate the current token with the backend
         // For now, we'll just check if we have a valid token in localStorage
         try {
+            if (typeof window === 'undefined') return;
+            
             const storedToken = localStorage.getItem('auth_token');
             if (!storedToken) {
                 clearAuthState();
@@ -246,6 +260,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
     if (context === undefined) {
+        // During SSR, return safe default values
+        if (typeof window === 'undefined') {
+            return {
+                user: null,
+                token: null,
+                isLoading: true,
+                isAuthenticated: false,
+                login: async () => ({ success: false, message: 'SSR context' }),
+                register: async () => ({ success: false, message: 'SSR context' }),
+                registerTenant: async () => ({ success: false, message: 'SSR context' }),
+                logout: () => {},
+                refreshAuth: async () => {},
+            };
+        }
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;

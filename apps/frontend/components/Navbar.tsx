@@ -1,7 +1,7 @@
 'use client';
 import React from 'react'
 import { AnimatedThemeToggler } from './magicui/animated-theme-toggler'
-import { FileText, Users, DollarSign, LogIn, LogOut, User } from 'lucide-react'
+import { FileText, LogIn, LogOut, User } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';

@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 import React, { useState, useEffect } from 'react';
 import { 
   Users, UserPlus, BarChart3, Shield, Mail, Trash2, Crown, 
-  RefreshCw, Award, Building, ArrowUp, History, Settings, 
+  RefreshCw, Award, Building, ArrowUp, Settings, 
   TrendingUp, Activity, CheckCircle, XCircle,
-  Download, Upload, Search, Bell, AlertTriangle,
+  Download, Upload, Search,
   Eye, Edit2, Clock, ArrowRight, FileText, Calendar,
   BookOpen, User, Copy
 } from 'lucide-react';
