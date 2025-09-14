@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { toast } from 'sonner';
 
 export type UserType = "ADMIN" | "MEMBER";
 
@@ -103,6 +104,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 };
                 
                 saveAuthState(userWithCorrectType, data.token);
+                toast.success(data.message || 'Login successful');
                 if(userWithCorrectType.role === 'ADMIN') {
                     router.push('/admin');
                 } else {
@@ -110,10 +112,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 }
                 return { success: true, message: data.message || 'Login successful' };
             } else {
+                toast.error(data.message || 'Login failed');
                 return { success: false, message: data.message || 'Login failed' };
             }
         } catch (error) {
             console.error('Login error:', error);
+            toast.error('Network error. Please try again.');
             return { success: false, message: 'Network error. Please try again.' };
         } finally {
             setIsLoading(false);
@@ -143,12 +147,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 };
                 
                 saveAuthState(userWithCorrectType, data.token);
+                if(userWithCorrectType.role === 'ADMIN') {
+                    router.push('/admin');
+                } else {
+                    router.push('/user');
+                }
+                toast.success(data.message || 'Registration successful');
                 return { success: true, message: data.message || 'Registration successful' };
             } else {
+                toast.error(data.message || 'Registration failed');
                 return { success: false, message: data.message || 'Registration failed' };
             }
         } catch (error) {
             console.error('Registration error:', error);
+            toast.error('Network error. Please try again.');
             return { success: false, message: 'Network error. Please try again.' };
         } finally {
             setIsLoading(false);
@@ -170,12 +182,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const data = await response.json();
 
             if (response.ok) {
+                toast.success(data.message || 'Tenant created successfully');
                 return { success: true, message: data.message || 'Tenant created successfully' };
             } else {
+                toast.error(data.message || 'Tenant creation failed');
                 return { success: false, message: data.message || 'Tenant creation failed' };
             }
         } catch (error) {
             console.error('Tenant registration error:', error);
+            toast.error('Network error. Please try again.');
             return { success: false, message: 'Network error. Please try again.' };
         } finally {
             setIsLoading(false);
@@ -184,6 +199,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const logout = () => {
         clearAuthState();
+        toast.success('Logged out successfully');
+        router.push('/');
     };
 
     const refreshAuth = async (): Promise<void> => {

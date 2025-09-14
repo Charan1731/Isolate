@@ -4,6 +4,7 @@ import { AnimatedThemeToggler } from './magicui/animated-theme-toggler'
 import { FileText, Users, DollarSign, LogIn, LogOut, User } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -18,10 +19,10 @@ const Navbar = () => {
             <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
               <FileText className="w-5 h-5 text-primary-foreground" />
             </div>
-            <div className="flex flex-col">
+            <Link href="/" className="flex flex-col cursor-pointer">
               <span className="text-xl font-bold tracking-tight">Isolate</span>
               <span className="text-xs text-muted-foreground -mt-1">Secure Notes</span>
-            </div>
+            </Link>
           </div>
 
           <div className="hidden lg:flex items-center space-x-8 cursor-pointer">
@@ -62,7 +63,7 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  <button className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
+                  <button onClick={() => router.push('/auth')} className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors flex items-center space-x-1 cursor-pointer">
                     <LogIn className="w-4 h-4" />
                     <span>Sign In</span>
                   </button>
