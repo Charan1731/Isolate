@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type UserType = "ADMIN" | "MEMBER";
@@ -25,7 +26,7 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 interface AuthProviderProps {
     children: ReactNode;
@@ -38,7 +39,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const isAuthenticated = !!user && !!token;
 
-    // Load auth state from localStorage on mount
+    const router = useRouter();
+
     useEffect(() => {
         const loadAuthState = () => {
             try {
@@ -63,7 +65,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         loadAuthState();
     }, []);
 
-    // Save auth state to localStorage
     const saveAuthState = (user: User, token: string) => {
         localStorage.setItem('auth_token', token);
         localStorage.setItem('auth_user', JSON.stringify(user));
@@ -102,6 +103,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 };
                 
                 saveAuthState(userWithCorrectType, data.token);
+                if(userWithCorrectType.role === 'ADMIN') {
+                    router.push('/admin');
+                } else {
+                    router.push('/user');
+                }
                 return { success: true, message: data.message || 'Login successful' };
             } else {
                 return { success: false, message: data.message || 'Login failed' };

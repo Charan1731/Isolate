@@ -3,9 +3,12 @@ import React from 'react'
 import { AnimatedThemeToggler } from './magicui/animated-theme-toggler'
 import { FileText, Users, DollarSign, LogIn, LogOut, User } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
+
+  const router = useRouter();
 
   return (
     <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-5xl">
@@ -63,7 +66,7 @@ const Navbar = () => {
                     <LogIn className="w-4 h-4" />
                     <span>Sign In</span>
                   </button>
-                  <button onClick={() => window.location.href = '/auth'} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer">
+                  <button onClick={() => router.push('/auth')} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors cursor-pointer">
                     Start Free
                   </button>
                 </>

@@ -103,7 +103,7 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
         const validPassword = await bcrypt.compare(password,user.password)
 
         if(!validPassword){
-            return res.status(401).json({message:"Unauthorized"})
+            return res.status(401).json({message:"invalid password"})
         }
 
         const token = jwt.sign({
