@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/auth/RegisterForm';
@@ -10,17 +10,20 @@ import { useRouter } from 'next/navigation';
 type AuthMode = 'login' | 'register' | 'tenant' | 'dashboard';
 
 const AuthPage = () => {
-  const { isLoading, isAuthenticated,user } = useAuth();
+  const { isLoading, isAuthenticated, user } = useAuth();
   const [authMode, setAuthMode] = useState<AuthMode>('login');
-  const router = useRouter()
+  const router = useRouter();
 
-  if(isAuthenticated){
-    if(user?.role === 'ADMIN'){
-      router.push('/admin')
-    } else {
-      router.push('/user')
+  // Handle navigation in useEffect to avoid setState during render
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/user');
+      }
     }
-  }
+  }, [isAuthenticated, user, router]);
 
   if (isLoading) {
     return (

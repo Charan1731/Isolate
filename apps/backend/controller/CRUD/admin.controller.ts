@@ -171,7 +171,6 @@ export const sendInvitation = async(req:Request<{},SendInvitationRequestBody>,re
     }
 }
 
-// Get all users in the tenant
 export const getTenantUsers = async(req:Request,res:Response) => {
     try {
         if(!req.user){
@@ -192,7 +191,11 @@ export const getTenantUsers = async(req:Request,res:Response) => {
                 updatedAt: true,
                 _count: {
                     select: {
-                        notes: true
+                        notes:{
+                            where:{
+                                deleted:false
+                            }
+                        }
                     }
                 }
             },
@@ -208,7 +211,6 @@ export const getTenantUsers = async(req:Request,res:Response) => {
     }
 }
 
-// Delete/Deactivate a user
 export const deleteUser = async(req:Request,res:Response) => {
     try {
         const { userId } = req.body;
@@ -265,7 +267,6 @@ export const deleteUser = async(req:Request,res:Response) => {
     }
 }
 
-// Get tenant statistics
 export const getTenantStats = async(req:Request,res:Response) => {
     try {
         if(!req.user){
@@ -316,7 +317,6 @@ export const getTenantStats = async(req:Request,res:Response) => {
     }
 }
 
-// Get audit logs
 export const getAuditLogs = async(req:Request,res:Response) => {
     try {
         if(!req.user){
@@ -368,7 +368,6 @@ export const getAuditLogs = async(req:Request,res:Response) => {
     }
 }
 
-// Get pending invitations
 export const getPendingInvitations = async(req:Request,res:Response) => {
     try {
         if(!req.user){
@@ -394,7 +393,6 @@ export const getPendingInvitations = async(req:Request,res:Response) => {
     }
 }
 
-// Update user role
 export const updateUserRole = async(req:Request,res:Response) => {
     try {
         const { userId, role } = req.body;
