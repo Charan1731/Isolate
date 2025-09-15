@@ -14,7 +14,6 @@ const AuthPage = () => {
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const router = useRouter();
 
-  // Handle navigation in useEffect to avoid setState during render
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.role === 'ADMIN') {

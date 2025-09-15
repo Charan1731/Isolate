@@ -1,9 +1,12 @@
+// app/404.tsx or pages/404.tsx (depending on your Next.js setup)
+
 "use client"
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-export default function NotFound() {
+export default function NotFoundPage() {
+  // Optional: Handle client-only stuff safely
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
